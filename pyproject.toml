@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "desktop-llm-runtime"
+version = "0.1.0"
+description = "A modular desktop runtime that lets LLMs control a computer through typed Python APIs."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Desktop LLM Runtime Contributors" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "mypy>=1.10",
+    "ruff>=0.5",
+]
+vision = [
+    "opencv-python>=4.10",
+    "pillow>=10.4",
+]
+ui = [
+    "comtypes>=1.4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["agent", "computer", "runtime", "memory", "vision", "ui"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "integration: tests that interact with the real operating system",
+    "windows: tests that require Windows",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "PYI"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["agent", "computer", "runtime", "memory", "vision", "ui"]

@@ -1,0 +1,108 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "scenarios": [
+    {
+      "task": "Notepad: open application, write text, read text back, verify",
+      "action_graph": [
+        "OpenApplicationAction",
+        "TypeTextAction"
+      ],
+      "actions": [
+        {
+          "action_id": "cd7689fe-a5b1-4519-9c52-89c93c4418e7",
+          "status": "succeeded",
+          "backend": "win32",
+          "score": 0.85,
+          "reason": "process created and application window detected",
+          "duration": 0.25979719999304507,
+          "outputs": {
+            "pid": 26420,
+            "target": "notepad.exe"
+          },
+          "errors": []
+        },
+        {
+          "action_id": "6b25afd7-21ff-4cc4-96ae-1c6bbc207cbd",
+          "status": "succeeded",
+          "backend": "uia-action",
+          "score": 0.95,
+          "reason": "executed through Microsoft UI Automation patterns",
+          "duration": 0.34878060000482947,
+          "outputs": {
+            "text": "Hello Runtime"
+          },
+          "errors": []
+        }
+      ],
+      "verification_result": true,
+      "duration": 1.0581527000031201,
+      "errors": [],
+      "notes": []
+    },
+    {
+      "task": "Calculator: open application, calculate 1 + 2, observe result",
+      "action_graph": [
+        "OpenApplicationAction",
+        "ClickAction",
+        "ClickAction",
+        "ClickAction",
+        "ClickAction"
+      ],
+      "actions": [
+        {
+          "action_id": "2535f81f-4693-48da-a08b-2b03b023aa4a",
+          "status": "failed",
+          "backend": "win32",
+          "score": 0.85,
+          "reason": "supports process lifecycle through Win32 APIs",
+          "duration": 10.095468500003335,
+          "outputs": {},
+          "errors": [
+            "No application window detected for process 18740"
+          ]
+        }
+      ],
+      "verification_result": false,
+      "duration": 10.095678400000907,
+      "errors": [
+        "Calculator launch did not produce an observed application window."
+      ],
+      "notes": [
+        "Windows Calculator may spawn through an app container with a different window process."
+      ]
+    },
+    {
+      "task": "File workflow: create text, save file, verify existence",
+      "action_graph": [],
+      "actions": [],
+      "verification_result": true,
+      "duration": 0.0034445999917807057,
+      "errors": [],
+      "notes": [
+        "This scenario validates the existing file facade.",
+        "File actions are not yet represented as ActionGraph actions in version 0.1."
+      ]
+    }
+  ],
+  "assessment": {
+    "stable": [
+      "Notepad E2E path exercises Win32 launch, UIA observation, UIA ValuePattern, and verification.",
+      "File facade can create/read/verify files within a configured root."
+    ],
+    "known_issues": [
+      "Calculator may fail because modern Windows Calculator can use app-container/window process indirection.",
+      "File workflow is not yet modeled as ActionGraph actions.",
+      "No fallback backend is implemented when UIA ValuePattern is unavailable."
+    ],
+    "recommended_improvements": [
+      "Add KeyboardInputBackend without changing Action/Executor/Plan/Task.",
+      "Add file actions after validation if file workflows need action telemetry.",
+      "Improve error quality by reporting failed action, pattern, fallback candidates, and selected backend.",
+      "Run Notepad reliability 10 times and record pass rate/duration distribution."
+    ]
+  }
+}
