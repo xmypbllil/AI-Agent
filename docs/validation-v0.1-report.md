@@ -9,17 +9,17 @@
 ### Notepad: open application, write text, read text back, verify
 
 - Status: passed
-- Duration: 93.22s
+- Duration: 2.89s
 - ActionGraph: OpenApplicationAction, TypeTextAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 2.16s
+  - duration: 2.00s
   - errors: ()
 - `succeeded` via `uia-action` score `0.95`
   - reason: executed through Microsoft UI Automation patterns
-  - duration: 90.53s
+  - duration: 0.41s
   - errors: ()
 
 Observations:
@@ -28,14 +28,14 @@ Observations:
 ### Calculator: open application, calculate 1 + 2, observe result
 
 - Status: failed
-- Duration: 17.43s
+- Duration: 14.82s
 - ActionGraph: OpenApplicationAction, ClickAction, ClickAction, ClickAction, ClickAction
 
 Actions:
 - `failed` via `win32` score `0.85`
   - reason: supports process lifecycle through Win32 APIs
-  - duration: 17.43s
-  - errors: ('No application window detected for process 39524',)
+  - duration: 14.82s
+  - errors: ('No application window detected for process 30572',)
 
 Errors:
 - Calculator launch did not produce an observed application window.
@@ -84,7 +84,7 @@ Actions:
   - errors: ()
 - `succeeded` via `development` score `0.9`
   - reason: executed file/terminal action through development backend
-  - duration: 0.18s
+  - duration: 0.19s
   - errors: ()
 - `succeeded` via `development` score `0.9`
   - reason: executed file/terminal action through development backend
@@ -98,13 +98,13 @@ Observations:
 ### Paint: open application, observe main window, inspect UI availability
 
 - Status: passed
-- Duration: 2.59s
+- Duration: 2.52s
 - ActionGraph: OpenApplicationAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 1.94s
+  - duration: 1.86s
   - errors: ()
 
 Observations:
@@ -114,13 +114,13 @@ Observations:
 ### Terminal: open cmd, execute simple command, observe output
 
 - Status: failed
-- Duration: 26.18s
+- Duration: 24.59s
 - ActionGraph: OpenApplicationAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 15.25s
+  - duration: 13.70s
   - errors: ()
 
 Observations:
