@@ -10,7 +10,13 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any, Mapping
 
-from runtime.observations.models import ProcessObservation, WindowObservation
+from runtime.observations.models import (
+    ApplicationRuntimeIdentity,
+    ProcessObservation,
+    ProcessTreeObservation,
+    WindowObservation,
+    WindowOwnershipObservation,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +64,36 @@ class WorldModel:
             if window.active:
                 data["active_window"] = window.identity
 
+        application = observations.get("application")
+        if isinstance(application, ApplicationRuntimeIdentity):
+            applications = [
+                item
+                for item in data.get("applications", ())
+                if item.runtime_id != application.runtime_id
+            ]
+            applications.append(application)
+            data["applications"] = tuple(applications)
+
+        process_tree = observations.get("process_tree")
+        if isinstance(process_tree, ProcessTreeObservation):
+            process_trees = [
+                item
+                for item in data.get("process_trees", ())
+                if item.root.pid != process_tree.root.pid
+            ]
+            process_trees.append(process_tree)
+            data["process_trees"] = tuple(process_trees)
+
+        ownership = observations.get("ownership")
+        if isinstance(ownership, WindowOwnershipObservation):
+            ownership_items = [
+                item
+                for item in data.get("ownership", ())
+                if item.window.runtime_window_id != ownership.window.runtime_window_id
+            ]
+            ownership_items.append(ownership)
+            data["ownership"] = tuple(ownership_items)
+
         return self.update(data)
 
     def apply_many(self, observations: tuple[Any, ...]) -> WorldSnapshot:
@@ -67,4 +103,10 @@ class WorldModel:
                 snapshot = self.apply_observations({"process": observation})
             elif isinstance(observation, WindowObservation):
                 snapshot = self.apply_observations({"window": observation})
+            elif isinstance(observation, ApplicationRuntimeIdentity):
+                snapshot = self.apply_observations({"application": observation})
+            elif isinstance(observation, ProcessTreeObservation):
+                snapshot = self.apply_observations({"process_tree": observation})
+            elif isinstance(observation, WindowOwnershipObservation):
+                snapshot = self.apply_observations({"ownership": observation})
         return snapshot

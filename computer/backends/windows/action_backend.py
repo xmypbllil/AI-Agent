@@ -12,11 +12,15 @@ from computer.backends.windows.windows import WindowsWindowDriver
 from runtime.actions.models import Action, ActionKind, ActionResult, ActionStatus
 from runtime.backends.models import BackendCapabilities, BackendCandidate, BackendRole
 from runtime.observations import (
+    ApplicationIdentity,
+    ApplicationRuntimeIdentity,
     Bounds,
     ProcessIdentity,
     ProcessObservation,
     ProcessStatus,
+    ProcessTreeObservation,
     WindowIdentity,
+    WindowOwnershipObservation,
     WindowLocator,
     WindowObservation,
 )
@@ -162,8 +166,16 @@ class Win32Backend:
             observations: dict[str, object] = {"process": process_observation}
             reason = "process created and observed"
             if wait_for_window:
-                window_observation = self._wait_for_window(process.pid, timeout_seconds=action.timeout_seconds)
+                application, process_tree, window_observation, ownership = self._wait_for_application_window(
+                    root_pid=process.pid,
+                    target=target,
+                    started_at=started_at,
+                    timeout_seconds=action.timeout_seconds,
+                )
+                observations["application"] = application
+                observations["process_tree"] = process_tree
                 observations["window"] = window_observation
+                observations["ownership"] = ownership
                 telemetry["stages"] = (*telemetry["stages"], "application_window_detected")
                 reason = "process created and application window detected"
             return ActionResult(
@@ -332,6 +344,143 @@ class Win32Backend:
             time.sleep(self.poll_interval_seconds)
         raise TimeoutError(f"No application window detected for process {pid}")
 
+    def _wait_for_application_window(
+        self,
+        root_pid: int,
+        target: str,
+        started_at: datetime,
+        timeout_seconds: float,
+    ) -> tuple[ApplicationRuntimeIdentity, ProcessTreeObservation, WindowObservation, WindowOwnershipObservation]:
+        deadline = time.monotonic() + min(timeout_seconds, self.window_wait_seconds)
+        last_tree = self._process_tree(root_pid)
+        while time.monotonic() < deadline:
+            last_tree = self._process_tree(root_pid)
+            process_ids = {item.identity.pid for item in last_tree.processes}
+            windows = [self._window_observation(item) for item in self.window_driver.list()]
+            match, reasons = self._correlate_window(windows, process_ids, target)
+            if match is not None:
+                runtime_id = f"app-runtime:{root_pid}:{self._process_name(target)}"
+                ownership = WindowOwnershipObservation(
+                    window=match.identity,
+                    application_runtime_id=runtime_id,
+                    process_id=match.identity.process_id,
+                    confidence=0.85,
+                    reasons=tuple(reasons),
+                )
+                identity = WindowIdentity(
+                    title=match.identity.title,
+                    process_id=match.identity.process_id,
+                    class_name=match.identity.class_name,
+                    runtime_window_id=match.identity.runtime_window_id,
+                    application_runtime_id=runtime_id,
+                    app_user_model_id=match.identity.app_user_model_id,
+                    package_family_name=match.identity.package_family_name,
+                )
+                match = WindowObservation(
+                    identity=identity,
+                    bounds=match.bounds,
+                    visible=match.visible,
+                    active=match.active,
+                    observed_at=match.observed_at,
+                    metadata=match.metadata,
+                    owner=ownership,
+                )
+                application = ApplicationRuntimeIdentity(
+                    runtime_id=runtime_id,
+                    application=ApplicationIdentity(
+                        name=self._process_name(target),
+                        executable=self._process_name(target),
+                        path=self._process_path(target),
+                    ),
+                    root_process_id=root_pid,
+                    process_ids=tuple(sorted(process_ids)),
+                    window_ids=(match.identity,),
+                    started_at=started_at,
+                    correlation_keys=tuple(reasons),
+                )
+                return application, last_tree, match, ownership
+            time.sleep(self.poll_interval_seconds)
+        raise TimeoutError(f"No application window detected for process {root_pid}")
+
+    def _process_tree(self, root_pid: int) -> ProcessTreeObservation:
+        details = self.process_driver.details()
+        by_pid = {
+            int(item["ProcessId"]): item
+            for item in details
+            if item.get("ProcessId", "").isdigit()
+        }
+        children_by_parent: dict[int, list[int]] = {}
+        for pid, item in by_pid.items():
+            parent = item.get("ParentProcessId", "")
+            if parent.isdigit():
+                children_by_parent.setdefault(int(parent), []).append(pid)
+
+        discovered = {root_pid}
+        queue = [root_pid]
+        while queue:
+            current = queue.pop(0)
+            for child in children_by_parent.get(current, []):
+                if child not in discovered:
+                    discovered.add(child)
+                    queue.append(child)
+
+        observations: list[ProcessObservation] = []
+        parent_by_pid: dict[int, int] = {}
+        for pid in sorted(discovered):
+            item = by_pid.get(pid, {})
+            name = item.get("Name") or str(pid)
+            parent_text = item.get("ParentProcessId", "")
+            parent_pid = int(parent_text) if parent_text.isdigit() else None
+            if parent_pid is not None:
+                parent_by_pid[pid] = parent_pid
+            observations.append(
+                ProcessObservation(
+                    identity=ProcessIdentity(pid=pid, name=name, parent_pid=parent_pid),
+                    path=item.get("ExecutablePath") or None,
+                    status=ProcessStatus.RUNNING,
+                    command_line=item.get("CommandLine") or None,
+                    parent_pid=parent_pid,
+                    metadata={"pid": pid},
+                )
+            )
+        root = observations[0].identity if observations else ProcessIdentity(pid=root_pid, name=str(root_pid))
+        return ProcessTreeObservation(
+            root=root,
+            processes=tuple(observations),
+            parent_by_pid=parent_by_pid,
+        )
+
+    def _correlate_window(
+        self,
+        windows: list[WindowObservation],
+        process_ids: set[int],
+        target: str,
+    ) -> tuple[WindowObservation | None, list[str]]:
+        target_name = self._process_name(target).lower()
+        for window in windows:
+            if window.identity.process_id in process_ids:
+                return window, [f"window_process_id={window.identity.process_id}", "process_tree_match"]
+        for window in windows:
+            process_id = window.identity.process_id
+            if process_id is None:
+                continue
+            detail = self._process_detail(process_id)
+            name = (detail.get("Name") or "").lower()
+            path = (detail.get("ExecutablePath") or "").lower()
+            command_line = (detail.get("CommandLine") or "").lower()
+            if target_name and (target_name == name or target_name in path or target_name in command_line):
+                return window, [
+                    f"window_process_id={process_id}",
+                    f"process_name_or_path_matches={target_name}",
+                ]
+        return None, []
+
+    def _process_detail(self, pid: int) -> dict[str, str]:
+        for item in self.process_driver.details():
+            if item.get("ProcessId") == str(pid):
+                return item
+        return {}
+
     def _resolve_window(self, locator: object | None) -> WindowObservation:
         matches = [item for item in self._observe(ObservationQuery(ObservationKind.WINDOW_LIST)) if self._matches_window(item, locator)]
         if not matches:
@@ -378,6 +527,7 @@ class Win32Backend:
                 title=getattr(window, "title"),
                 process_id=getattr(window, "process_id"),
                 class_name=getattr(window, "class_name"),
+                runtime_window_id=f"win32:{getattr(window, 'handle')}",
             ),
             bounds=bounds,
             visible=True,

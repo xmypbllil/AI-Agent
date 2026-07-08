@@ -36,6 +36,25 @@ class WindowsProcessDriver:
             processes.append(ProcessInfo(pid=int(row[1]), name=row[0], window_title=window_title))
         return processes
 
+    def details(self) -> list[dict[str, str]]:
+        completed = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                "Get-CimInstance Win32_Process | "
+                "Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine | "
+                "ConvertTo-Csv -NoTypeInformation",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
+        if completed.returncode != 0:
+            return []
+        return list(csv.DictReader(StringIO(completed.stdout)))
+
     def start(self, command: str, cwd: str | None = None) -> ProcessInfo:
         args = shlex.split(command, posix=False)
         process = subprocess.Popen(args, cwd=cwd, shell=False)

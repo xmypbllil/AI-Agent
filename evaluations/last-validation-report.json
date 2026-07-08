@@ -1,8 +1,8 @@
 {
   "summary": {
-    "total": 3,
-    "passed": 2,
-    "failed": 1
+    "total": 6,
+    "passed": 3,
+    "failed": 3
   },
   "scenarios": [
     {
@@ -13,25 +13,25 @@
       ],
       "actions": [
         {
-          "action_id": "cd7689fe-a5b1-4519-9c52-89c93c4418e7",
+          "action_id": "9b4b528e-f83c-40d6-9636-0432ade4d54b",
           "status": "succeeded",
           "backend": "win32",
           "score": 0.85,
           "reason": "process created and application window detected",
-          "duration": 0.25979719999304507,
+          "duration": 2.168402299997979,
           "outputs": {
-            "pid": 26420,
+            "pid": 32476,
             "target": "notepad.exe"
           },
           "errors": []
         },
         {
-          "action_id": "6b25afd7-21ff-4cc4-96ae-1c6bbc207cbd",
+          "action_id": "27c3ac89-f6ea-4ecf-8134-a277c7c95ad7",
           "status": "succeeded",
           "backend": "uia-action",
           "score": 0.95,
           "reason": "executed through Microsoft UI Automation patterns",
-          "duration": 0.34878060000482947,
+          "duration": 0.4977717000001576,
           "outputs": {
             "text": "Hello Runtime"
           },
@@ -39,9 +39,13 @@
         }
       ],
       "verification_result": true,
-      "duration": 1.0581527000031201,
+      "duration": 3.2229546000016853,
       "errors": [],
-      "notes": []
+      "notes": [],
+      "observations": [
+        "UIA ValuePattern text verification completed."
+      ],
+      "screenshots": []
     },
     {
       "task": "Calculator: open application, calculate 1 + 2, observe result",
@@ -54,55 +58,158 @@
       ],
       "actions": [
         {
-          "action_id": "2535f81f-4693-48da-a08b-2b03b023aa4a",
+          "action_id": "d59f592b-d8df-4ec0-bf7d-12dfbf814917",
           "status": "failed",
           "backend": "win32",
           "score": 0.85,
           "reason": "supports process lifecycle through Win32 APIs",
-          "duration": 10.095468500003335,
+          "duration": 18.851385600006324,
           "outputs": {},
           "errors": [
-            "No application window detected for process 18740"
+            "No application window detected for process 40884"
           ]
         }
       ],
       "verification_result": false,
-      "duration": 10.095678400000907,
+      "duration": 18.8515744000033,
       "errors": [
         "Calculator launch did not produce an observed application window."
       ],
       "notes": [
         "Windows Calculator may spawn through an app container with a different window process."
-      ]
+      ],
+      "observations": [],
+      "screenshots": []
     },
     {
       "task": "File workflow: create text, save file, verify existence",
       "action_graph": [],
       "actions": [],
       "verification_result": true,
-      "duration": 0.0034445999917807057,
+      "duration": 0.003335700006573461,
       "errors": [],
       "notes": [
         "This scenario validates the existing file facade.",
         "File actions are not yet represented as ActionGraph actions in version 0.1."
-      ]
+      ],
+      "observations": [
+        "Created file in temporary directory: runtime-validation.txt"
+      ],
+      "screenshots": []
+    },
+    {
+      "task": "Paint: open application, observe main window, inspect UI availability",
+      "action_graph": [
+        "OpenApplicationAction"
+      ],
+      "actions": [
+        {
+          "action_id": "eb92c079-a6d6-4c35-baa5-2553a1d869a7",
+          "status": "succeeded",
+          "backend": "win32",
+          "score": 0.85,
+          "reason": "process created and application window detected",
+          "duration": 2.1800333999999566,
+          "outputs": {
+            "pid": 27224,
+            "target": "mspaint.exe"
+          },
+          "errors": []
+        }
+      ],
+      "verification_result": true,
+      "duration": 2.9716557000065222,
+      "errors": [],
+      "notes": [],
+      "observations": [
+        "Window count: 1",
+        "First UI element: window"
+      ],
+      "screenshots": []
+    },
+    {
+      "task": "Terminal: open cmd, execute simple command, observe output",
+      "action_graph": [
+        "OpenApplicationAction"
+      ],
+      "actions": [
+        {
+          "action_id": "c3c1990e-2c3e-429b-8ff5-4b76e7e01106",
+          "status": "succeeded",
+          "backend": "win32",
+          "score": 0.85,
+          "reason": "process created and application window detected",
+          "duration": 16.898699600002146,
+          "outputs": {
+            "pid": 43292,
+            "target": "cmd.exe /k \"echo Hello Runtime\""
+          },
+          "errors": []
+        }
+      ],
+      "verification_result": false,
+      "duration": 27.804363899995224,
+      "errors": [],
+      "notes": [
+        "The command is passed at launch time; interactive keyboard input is not evaluated in v0.1.",
+        "Validation output showed command quoting can be mangled before cmd receives the intended input."
+      ],
+      "observations": [
+        "Window count: 0",
+        "Observed text: None"
+      ],
+      "screenshots": []
+    },
+    {
+      "task": "VS Code: open if installed, find window, collect UI observation limitations",
+      "action_graph": [
+        "OpenApplicationAction"
+      ],
+      "actions": [
+        {
+          "action_id": "c74dda96-a6cd-409d-8601-e986d1240e6c",
+          "status": "failed",
+          "backend": "win32",
+          "score": 0.85,
+          "reason": "supports process lifecycle through Win32 APIs",
+          "duration": 0.0011510000040289015,
+          "outputs": {},
+          "errors": [
+            "[WinError 2] Не удается найти указанный файл"
+          ]
+        }
+      ],
+      "verification_result": false,
+      "duration": 0.0012820999982068315,
+      "errors": [
+        "VS Code did not launch into an observed window from command 'code'."
+      ],
+      "notes": [
+        "VS Code may not be installed or the 'code' shim may return before the UI process/window is observed."
+      ],
+      "observations": [],
+      "screenshots": []
     }
   ],
   "assessment": {
     "stable": [
       "Notepad E2E path exercises Win32 launch, UIA observation, UIA ValuePattern, and verification.",
-      "File facade can create/read/verify files within a configured root."
+      "File facade can create/read/verify files within a configured root.",
+      "Classic Win32-style application launch/window observation works for at least one application."
     ],
     "known_issues": [
       "Calculator may fail because modern Windows Calculator can use app-container/window process indirection.",
       "File workflow is not yet modeled as ActionGraph actions.",
-      "No fallback backend is implemented when UIA ValuePattern is unavailable."
+      "No fallback backend is implemented when UIA ValuePattern is unavailable.",
+      "Terminal launch can correlate to a window, but validation still uses PID-window lookup and command quoting remains fragile.",
+      "VS Code may be missing from PATH or require application/runtime command resolution before window correlation can run."
     ],
     "recommended_improvements": [
       "Add KeyboardInputBackend without changing Action/Executor/Plan/Task.",
       "Add file actions after validation if file workflows need action telemetry.",
       "Improve error quality by reporting failed action, pattern, fallback candidates, and selected backend.",
-      "Run Notepad reliability 10 times and record pass rate/duration distribution."
+      "Run Notepad reliability 10 times and record pass rate/duration distribution.",
+      "Add package/AppUserModelID evidence for packaged apps and let validation query windows by application_runtime_id."
     ]
   }
 }

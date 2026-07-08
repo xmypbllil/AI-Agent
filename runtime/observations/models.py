@@ -31,6 +31,9 @@ class Bounds:
 class ProcessIdentity:
     pid: int
     name: str
+    parent_pid: int | None = None
+    session_id: int | None = None
+    application_runtime_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -38,6 +41,10 @@ class WindowIdentity:
     title: str
     process_id: int | None = None
     class_name: str | None = None
+    runtime_window_id: str | None = None
+    application_runtime_id: str | None = None
+    app_user_model_id: str | None = None
+    package_family_name: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,6 +55,11 @@ class ProcessObservation:
     status: ProcessStatus = ProcessStatus.UNKNOWN
     observed_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    command_line: str | None = None
+    parent_pid: int | None = None
+    package_family_name: str | None = None
+    app_user_model_id: str | None = None
+    application_runtime_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,4 +69,49 @@ class WindowObservation:
     visible: bool = True
     active: bool = False
     observed_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    metadata: Mapping[str, Any] = field(default_factory=dict)
+    owner: "WindowOwnershipObservation | None" = None
+    z_order: int | None = None
+    display_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ApplicationIdentity:
+    name: str
+    executable: str | None = None
+    path: str | None = None
+    package_family_name: str | None = None
+    app_user_model_id: str | None = None
+    publisher: str | None = None
+    metadata: Mapping[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True, slots=True)
+class ApplicationRuntimeIdentity:
+    runtime_id: str
+    application: ApplicationIdentity
+    root_process_id: int | None = None
+    process_ids: tuple[int, ...] = ()
+    window_ids: tuple[WindowIdentity, ...] = ()
+    started_at: datetime | None = None
+    correlation_keys: tuple[str, ...] = ()
+    metadata: Mapping[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True, slots=True)
+class ProcessTreeObservation:
+    root: ProcessIdentity
+    processes: tuple[ProcessObservation, ...]
+    parent_by_pid: Mapping[int, int]
+    observed_at: datetime = field(default_factory=lambda: datetime.now(tz=UTC))
+    metadata: Mapping[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True, slots=True)
+class WindowOwnershipObservation:
+    window: WindowIdentity
+    application_runtime_id: str | None = None
+    process_id: int | None = None
+    confidence: float = 0.0
+    reasons: tuple[str, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)

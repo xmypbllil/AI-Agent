@@ -1,11 +1,15 @@
 """Observation models public API."""
 
 from runtime.observations.models import (
+    ApplicationIdentity,
+    ApplicationRuntimeIdentity,
     Bounds,
     ProcessIdentity,
     ProcessObservation,
     ProcessStatus,
+    ProcessTreeObservation,
     WindowIdentity,
+    WindowOwnershipObservation,
     WindowObservation,
 )
 from runtime.observations.queries import (
@@ -19,10 +23,14 @@ from runtime.observations.queries import (
 
 __all__ = [
     "Bounds",
+    "ApplicationIdentity",
+    "ApplicationRuntimeIdentity",
     "ProcessIdentity",
     "ProcessObservation",
     "ProcessStatus",
+    "ProcessTreeObservation",
     "WindowIdentity",
+    "WindowOwnershipObservation",
     "ObservationKind",
     "ObservationQuery",
     "ObservationResult",
