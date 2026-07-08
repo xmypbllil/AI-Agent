@@ -253,7 +253,7 @@ def run_terminal() -> ScenarioReport:
     pid: int | None = None
     try:
         launch = computer.action_executor.execute(
-            OpenApplicationAction('cmd.exe /k "echo Hello Runtime"', timeout_seconds=10.0)
+            OpenApplicationAction('cmd.exe /k echo Hello Runtime', timeout_seconds=10.0)
         )
         results.append(launch)
         pid_value = launch.outputs.get("pid")

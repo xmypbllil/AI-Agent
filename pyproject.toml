@@ -12,6 +12,9 @@ license = { text = "Apache-2.0" }
 authors = [{ name = "Desktop LLM Runtime Contributors" }]
 dependencies = []
 
+[project.scripts]
+computer-agent = "agent.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.2",
