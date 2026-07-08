@@ -24,6 +24,13 @@ class ActionKind(StrEnum):
     RESTORE_WINDOW = "restore_window"
     CLICK = "click"
     TYPE_TEXT = "type_text"
+    READ_FILE = "read_file"
+    WRITE_FILE = "write_file"
+    EDIT_FILE = "edit_file"
+    SEARCH_FILES = "search_files"
+    RUN_COMMAND = "run_command"
+    CAPTURE_OUTPUT = "capture_output"
+    WAIT_PROCESS = "wait_process"
 
 
 class ActionStatus(StrEnum):
@@ -160,6 +167,65 @@ class TypeTextAction(Action):
         object.__setattr__(self, "telemetry", {})
         object.__setattr__(self, "screenshot_before", None)
         object.__setattr__(self, "screenshot_after", None)
+
+
+@dataclass(frozen=True, slots=True)
+class ReadFileAction(Action):
+    def __init__(self, path: str, encoding: str = "utf-8") -> None:
+        self._init(ActionKind.READ_FILE, {"path": path, "encoding": encoding})
+
+    def _init(self, kind: ActionKind, inputs: Mapping[str, Any]) -> None:
+        object.__setattr__(self, "kind", kind)
+        object.__setattr__(self, "inputs", inputs)
+        object.__setattr__(self, "action_id", str(uuid4()))
+        object.__setattr__(self, "outputs", {})
+        object.__setattr__(self, "preconditions", ())
+        object.__setattr__(self, "postconditions", ())
+        object.__setattr__(self, "rollback", None)
+        object.__setattr__(self, "retry_policy", RetryPolicy())
+        object.__setattr__(self, "timeout_seconds", 30.0)
+        object.__setattr__(self, "telemetry", {})
+        object.__setattr__(self, "screenshot_before", None)
+        object.__setattr__(self, "screenshot_after", None)
+
+
+@dataclass(frozen=True, slots=True)
+class WriteFileAction(ReadFileAction):
+    def __init__(self, path: str, content: str, encoding: str = "utf-8") -> None:
+        self._init(ActionKind.WRITE_FILE, {"path": path, "content": content, "encoding": encoding})
+
+
+@dataclass(frozen=True, slots=True)
+class EditFileAction(ReadFileAction):
+    def __init__(self, path: str, old: str, new: str, encoding: str = "utf-8") -> None:
+        self._init(ActionKind.EDIT_FILE, {"path": path, "old": old, "new": new, "encoding": encoding})
+
+
+@dataclass(frozen=True, slots=True)
+class SearchFilesAction(ReadFileAction):
+    def __init__(self, pattern: str, root: str = ".") -> None:
+        self._init(ActionKind.SEARCH_FILES, {"pattern": pattern, "root": root})
+
+
+@dataclass(frozen=True, slots=True)
+class RunCommandAction(ReadFileAction):
+    def __init__(self, command: str, cwd: str | None = None, timeout_seconds: float = 60.0) -> None:
+        self._init(ActionKind.RUN_COMMAND, {"command": command, "cwd": cwd})
+        object.__setattr__(self, "timeout_seconds", timeout_seconds)
+
+
+@dataclass(frozen=True, slots=True)
+class CaptureOutputAction(ReadFileAction):
+    def __init__(self, command: str, cwd: str | None = None, timeout_seconds: float = 60.0) -> None:
+        self._init(ActionKind.CAPTURE_OUTPUT, {"command": command, "cwd": cwd})
+        object.__setattr__(self, "timeout_seconds", timeout_seconds)
+
+
+@dataclass(frozen=True, slots=True)
+class WaitProcessAction(ReadFileAction):
+    def __init__(self, pid: int, timeout_seconds: float = 30.0) -> None:
+        self._init(ActionKind.WAIT_PROCESS, {"pid": pid})
+        object.__setattr__(self, "timeout_seconds", timeout_seconds)
 
 
 @dataclass(frozen=True, slots=True)

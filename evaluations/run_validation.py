@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from computer import create_default_computer
-from runtime.actions import ClickAction, OpenApplicationAction
+from runtime.actions import ClickAction, EditFileAction, ReadFileAction, RunCommandAction, SearchFilesAction, WriteFileAction, OpenApplicationAction
 from runtime.actions.models import ActionResult, ActionStatus
 from runtime.observations import WindowLocator
 from runtime.ui import Locator, UIControlType
@@ -163,6 +163,47 @@ def run_file_workflow() -> ScenarioReport:
                 "File actions are not yet represented as ActionGraph actions in version 0.1.",
             ],
             observations=[f"Created file in temporary directory: {target}"],
+        )
+
+
+def run_self_development_workflow() -> ScenarioReport:
+    started = time.perf_counter()
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        computer = create_default_computer(root=root)
+        actions = [
+            WriteFileAction("project/module.py", "VALUE = 'old'\n"),
+            ReadFileAction("project/module.py"),
+            EditFileAction("project/module.py", "'old'", "'Hello Runtime'"),
+            SearchFilesAction("*.py", "project"),
+            RunCommandAction("python -m compileall project", cwd="."),
+            ReadFileAction("project/module.py"),
+        ]
+        results = [computer.action_executor.execute(action) for action in actions]
+        final_content = results[-1].outputs.get("content") if results else None
+        command_result = results[-2].outputs if len(results) >= 2 else {}
+        verified = (
+            all(item.status is ActionStatus.SUCCEEDED for item in results)
+            and final_content == "VALUE = 'Hello Runtime'\n"
+            and command_result.get("exit_code") == 0
+        )
+        return ScenarioReport(
+            task="Self-development: open project, read file, modify file, run validation command, verify",
+            action_graph=[
+                "WriteFileAction",
+                "ReadFileAction",
+                "EditFileAction",
+                "SearchFilesAction",
+                "RunCommandAction",
+                "ReadFileAction",
+            ],
+            actions=[trace(item) for item in results],
+            verification_result=verified,
+            duration=time.perf_counter() - started,
+            observations=[
+                f"Final content: {final_content!r}",
+                f"Validation exit code: {command_result.get('exit_code')!r}",
+            ],
         )
 
 
@@ -366,6 +407,7 @@ def main() -> None:
         run_notepad(),
         run_calculator(),
         run_file_workflow(),
+        run_self_development_workflow(),
         run_paint(),
         run_terminal(),
         run_vscode(),
@@ -381,6 +423,7 @@ def main() -> None:
             "stable": [
                 "Notepad E2E path exercises Win32 launch, UIA observation, UIA ValuePattern, and verification.",
                 "File facade can create/read/verify files within a configured root.",
+                "Self-development workflow can write, read, edit, search, and run a validation command through ActionGraph.",
                 "Classic Win32-style application launch/window observation works for at least one application.",
             ],
             "known_issues": [

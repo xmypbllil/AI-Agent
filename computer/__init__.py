@@ -33,7 +33,7 @@ from computer.vision import Vision
 from computer.windows import Windows
 from runtime.actions.engine import ActionExecutor
 from runtime.backends.ports import ActionBackend
-from runtime.backends import BackendManager, MockBackend
+from runtime.backends import BackendManager, DevelopmentBackend, MockBackend
 from runtime.observations.engine import ObservationExecutor
 from runtime.backends.ports import ObservationBackend
 from runtime.ui.ports import UIObservationBackend
@@ -136,6 +136,7 @@ def create_default_computer(root: Path | None = None, use_mock_backend: bool = F
         action_backends.append(drivers.action_backend)
     if use_mock_backend or not action_backends:
         action_backends.append(MockBackend())
+    action_backends.append(DevelopmentBackend(root=root or Path.cwd()))
     observation_backends: list[ObservationBackend] = []
     if drivers.observation_backend is not None and not use_mock_backend:
         observation_backends.append(drivers.observation_backend)

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 6,
-    "passed": 3,
+    "total": 7,
+    "passed": 4,
     "failed": 3
   },
   "scenarios": [
@@ -13,25 +13,25 @@
       ],
       "actions": [
         {
-          "action_id": "9b4b528e-f83c-40d6-9636-0432ade4d54b",
+          "action_id": "3bd72e4d-629d-464f-8693-3dce665ee903",
           "status": "succeeded",
           "backend": "win32",
           "score": 0.85,
           "reason": "process created and application window detected",
-          "duration": 2.168402299997979,
+          "duration": 2.164222300008987,
           "outputs": {
-            "pid": 32476,
+            "pid": 31464,
             "target": "notepad.exe"
           },
           "errors": []
         },
         {
-          "action_id": "27c3ac89-f6ea-4ecf-8134-a277c7c95ad7",
+          "action_id": "a8d6d126-df9e-4ce5-882f-96fb374b735e",
           "status": "succeeded",
           "backend": "uia-action",
           "score": 0.95,
           "reason": "executed through Microsoft UI Automation patterns",
-          "duration": 0.4977717000001576,
+          "duration": 90.52904080000008,
           "outputs": {
             "text": "Hello Runtime"
           },
@@ -39,7 +39,7 @@
         }
       ],
       "verification_result": true,
-      "duration": 3.2229546000016853,
+      "duration": 93.219499800005,
       "errors": [],
       "notes": [],
       "observations": [
@@ -58,20 +58,20 @@
       ],
       "actions": [
         {
-          "action_id": "d59f592b-d8df-4ec0-bf7d-12dfbf814917",
+          "action_id": "b190d539-280a-4c8a-a14c-d1f570ed0c00",
           "status": "failed",
           "backend": "win32",
           "score": 0.85,
           "reason": "supports process lifecycle through Win32 APIs",
-          "duration": 18.851385600006324,
+          "duration": 17.427979399988544,
           "outputs": {},
           "errors": [
-            "No application window detected for process 40884"
+            "No application window detected for process 39524"
           ]
         }
       ],
       "verification_result": false,
-      "duration": 18.8515744000033,
+      "duration": 17.428155100002186,
       "errors": [
         "Calculator launch did not produce an observed application window."
       ],
@@ -86,7 +86,7 @@
       "action_graph": [],
       "actions": [],
       "verification_result": true,
-      "duration": 0.003335700006573461,
+      "duration": 0.0035478999925544485,
       "errors": [],
       "notes": [
         "This scenario validates the existing file facade.",
@@ -98,27 +98,133 @@
       "screenshots": []
     },
     {
+      "task": "Self-development: open project, read file, modify file, run validation command, verify",
+      "action_graph": [
+        "WriteFileAction",
+        "ReadFileAction",
+        "EditFileAction",
+        "SearchFilesAction",
+        "RunCommandAction",
+        "ReadFileAction"
+      ],
+      "actions": [
+        {
+          "action_id": "c8aaaca2-6660-4fec-9cb2-18772b222c49",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0008510999905411154,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j\\project\\module.py",
+            "bytes": 14
+          },
+          "errors": []
+        },
+        {
+          "action_id": "79ddb2c0-03d6-4e63-a8d2-b6796d1e8fb5",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0004592000041157007,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j\\project\\module.py",
+            "content": "VALUE = 'old'\n"
+          },
+          "errors": []
+        },
+        {
+          "action_id": "6b344e15-0fa6-46eb-a05c-5da9798db4ce",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.000709400002961047,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j\\project\\module.py",
+            "replacements": 1
+          },
+          "errors": []
+        },
+        {
+          "action_id": "c271c06b-d68d-4876-89c3-22994d070a10",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0006706999993184581,
+          "outputs": {
+            "root": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j\\project",
+            "pattern": "*.py",
+            "matches": [
+              "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j\\project\\module.py"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "action_id": "ef6d7099-cfff-4a32-8a88-1b97e774d798",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.18495419999817386,
+          "outputs": {
+            "command": "python -m compileall project",
+            "cwd": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j",
+            "exit_code": 0,
+            "stdout": "Listing 'project'...\nCompiling 'project\\\\module.py'...\n",
+            "stderr": ""
+          },
+          "errors": []
+        },
+        {
+          "action_id": "da3895e2-92b9-4f43-a803-9953658ec9b6",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0006571000121766701,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp2tsl6g1j\\project\\module.py",
+            "content": "VALUE = 'Hello Runtime'\n"
+          },
+          "errors": []
+        }
+      ],
+      "verification_result": true,
+      "duration": 0.18873789999634027,
+      "errors": [],
+      "notes": [],
+      "observations": [
+        "Final content: \"VALUE = 'Hello Runtime'\\n\"",
+        "Validation exit code: 0"
+      ],
+      "screenshots": []
+    },
+    {
       "task": "Paint: open application, observe main window, inspect UI availability",
       "action_graph": [
         "OpenApplicationAction"
       ],
       "actions": [
         {
-          "action_id": "eb92c079-a6d6-4c35-baa5-2553a1d869a7",
+          "action_id": "b608c6ad-e6a9-499f-9fd6-70d6cabc23ca",
           "status": "succeeded",
           "backend": "win32",
           "score": 0.85,
           "reason": "process created and application window detected",
-          "duration": 2.1800333999999566,
+          "duration": 1.9353495000104886,
           "outputs": {
-            "pid": 27224,
+            "pid": 27208,
             "target": "mspaint.exe"
           },
           "errors": []
         }
       ],
       "verification_result": true,
-      "duration": 2.9716557000065222,
+      "duration": 2.5946277000039117,
       "errors": [],
       "notes": [],
       "observations": [
@@ -134,21 +240,21 @@
       ],
       "actions": [
         {
-          "action_id": "c3c1990e-2c3e-429b-8ff5-4b76e7e01106",
+          "action_id": "f30e74dd-e803-4de9-927f-9dc88ee766a9",
           "status": "succeeded",
           "backend": "win32",
           "score": 0.85,
           "reason": "process created and application window detected",
-          "duration": 16.898699600002146,
+          "duration": 15.25064869999187,
           "outputs": {
-            "pid": 43292,
+            "pid": 34804,
             "target": "cmd.exe /k \"echo Hello Runtime\""
           },
           "errors": []
         }
       ],
       "verification_result": false,
-      "duration": 27.804363899995224,
+      "duration": 26.18356789999234,
       "errors": [],
       "notes": [
         "The command is passed at launch time; interactive keyboard input is not evaluated in v0.1.",
@@ -167,12 +273,12 @@
       ],
       "actions": [
         {
-          "action_id": "c74dda96-a6cd-409d-8601-e986d1240e6c",
+          "action_id": "c191619a-25d4-45e9-8849-50bf31e12b1e",
           "status": "failed",
           "backend": "win32",
           "score": 0.85,
           "reason": "supports process lifecycle through Win32 APIs",
-          "duration": 0.0011510000040289015,
+          "duration": 0.001185399989481084,
           "outputs": {},
           "errors": [
             "[WinError 2] Не удается найти указанный файл"
@@ -180,7 +286,7 @@
         }
       ],
       "verification_result": false,
-      "duration": 0.0012820999982068315,
+      "duration": 0.0013353999966057017,
       "errors": [
         "VS Code did not launch into an observed window from command 'code'."
       ],
@@ -195,6 +301,7 @@
     "stable": [
       "Notepad E2E path exercises Win32 launch, UIA observation, UIA ValuePattern, and verification.",
       "File facade can create/read/verify files within a configured root.",
+      "Self-development workflow can write, read, edit, search, and run a validation command through ActionGraph.",
       "Classic Win32-style application launch/window observation works for at least one application."
     ],
     "known_issues": [

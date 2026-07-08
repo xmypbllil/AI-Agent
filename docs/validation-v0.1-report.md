@@ -1,7 +1,7 @@
 # Validation v0.1 Report
 
-- Total: 6
-- Passed: 3
+- Total: 7
+- Passed: 4
 - Failed: 3
 
 ## Scenario Results
@@ -9,18 +9,18 @@
 ### Notepad: open application, write text, read text back, verify
 
 - Status: passed
-- Duration: 3.22s
+- Duration: 93.22s
 - ActionGraph: OpenApplicationAction, TypeTextAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 2.17s
-  - errors: []
+  - duration: 2.16s
+  - errors: ()
 - `succeeded` via `uia-action` score `0.95`
   - reason: executed through Microsoft UI Automation patterns
-  - duration: 0.50s
-  - errors: []
+  - duration: 90.53s
+  - errors: ()
 
 Observations:
 - UIA ValuePattern text verification completed.
@@ -28,14 +28,14 @@ Observations:
 ### Calculator: open application, calculate 1 + 2, observe result
 
 - Status: failed
-- Duration: 18.85s
+- Duration: 17.43s
 - ActionGraph: OpenApplicationAction, ClickAction, ClickAction, ClickAction, ClickAction
 
 Actions:
 - `failed` via `win32` score `0.85`
   - reason: supports process lifecycle through Win32 APIs
-  - duration: 18.85s
-  - errors: ['No application window detected for process 40884']
+  - duration: 17.43s
+  - errors: ('No application window detected for process 39524',)
 
 Errors:
 - Calculator launch did not produce an observed application window.
@@ -59,17 +59,53 @@ Notes:
 - This scenario validates the existing file facade.
 - File actions are not yet represented as ActionGraph actions in version 0.1.
 
+### Self-development: open project, read file, modify file, run validation command, verify
+
+- Status: passed
+- Duration: 0.19s
+- ActionGraph: WriteFileAction, ReadFileAction, EditFileAction, SearchFilesAction, RunCommandAction, ReadFileAction
+
+Actions:
+- `succeeded` via `development` score `0.9`
+  - reason: executed file/terminal action through development backend
+  - duration: 0.00s
+  - errors: ()
+- `succeeded` via `development` score `0.9`
+  - reason: executed file/terminal action through development backend
+  - duration: 0.00s
+  - errors: ()
+- `succeeded` via `development` score `0.9`
+  - reason: executed file/terminal action through development backend
+  - duration: 0.00s
+  - errors: ()
+- `succeeded` via `development` score `0.9`
+  - reason: executed file/terminal action through development backend
+  - duration: 0.00s
+  - errors: ()
+- `succeeded` via `development` score `0.9`
+  - reason: executed file/terminal action through development backend
+  - duration: 0.18s
+  - errors: ()
+- `succeeded` via `development` score `0.9`
+  - reason: executed file/terminal action through development backend
+  - duration: 0.00s
+  - errors: ()
+
+Observations:
+- Final content: "VALUE = 'Hello Runtime'\n"
+- Validation exit code: 0
+
 ### Paint: open application, observe main window, inspect UI availability
 
 - Status: passed
-- Duration: 2.97s
+- Duration: 2.59s
 - ActionGraph: OpenApplicationAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 2.18s
-  - errors: []
+  - duration: 1.94s
+  - errors: ()
 
 Observations:
 - Window count: 1
@@ -78,14 +114,14 @@ Observations:
 ### Terminal: open cmd, execute simple command, observe output
 
 - Status: failed
-- Duration: 27.80s
+- Duration: 26.18s
 - ActionGraph: OpenApplicationAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 16.90s
-  - errors: []
+  - duration: 15.25s
+  - errors: ()
 
 Observations:
 - Window count: 0
@@ -105,7 +141,7 @@ Actions:
 - `failed` via `win32` score `0.85`
   - reason: supports process lifecycle through Win32 APIs
   - duration: 0.00s
-  - errors: ['[WinError 2] Не удается найти указанный файл']
+  - errors: ('[WinError 2] Не удается найти указанный файл',)
 
 Errors:
 - VS Code did not launch into an observed window from command 'code'.
@@ -117,6 +153,7 @@ Notes:
 
 - Notepad E2E path exercises Win32 launch, UIA observation, UIA ValuePattern, and verification.
 - File facade can create/read/verify files within a configured root.
+- Self-development workflow can write, read, edit, search, and run a validation command through ActionGraph.
 - Classic Win32-style application launch/window observation works for at least one application.
 
 ## Failed Cases
