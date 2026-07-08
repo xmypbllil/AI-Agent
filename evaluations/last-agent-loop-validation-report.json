@@ -1,0 +1,255 @@
+{
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "scenarios": [
+    {
+      "goal": "Bug fix: diagnose syntax error, repair file, run validation",
+      "actions": [
+        {
+          "action_id": "f590a7f8-2cd9-4c6a-a421-077c3c5ce1fc",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0008813999884296209,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmpcmllnvdc\\buggy.py",
+            "bytes": 9
+          },
+          "errors": []
+        },
+        {
+          "action_id": "9e209188-0f48-49d8-832a-751683ebb564",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.00047050000284798443,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmpcmllnvdc\\buggy.py",
+            "content": "VALUE = \n"
+          },
+          "errors": []
+        },
+        {
+          "action_id": "a44e5ad5-e925-4efe-a477-de8c2c2e1138",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.18741560001217294,
+          "outputs": {
+            "command": "python -m compileall .",
+            "cwd": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmpcmllnvdc",
+            "exit_code": 1,
+            "stdout": "Listing '.'...\nCompiling '.\\\\buggy.py'...\n***   File \".\\buggy.py\", line 1\n    VALUE = \n            ^\nSyntaxError: invalid syntax\n\n",
+            "stderr": ""
+          },
+          "errors": []
+        },
+        {
+          "action_id": "378fc9cc-e212-4705-b564-618d0e0d0acb",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0009057999996002764,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmpcmllnvdc\\buggy.py",
+            "replacements": 1
+          },
+          "errors": []
+        },
+        {
+          "action_id": "5a7e8fe0-42b7-41dd-8afc-08a8a1feff8d",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.1886506000009831,
+          "outputs": {
+            "command": "python -m compileall .",
+            "cwd": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmpcmllnvdc",
+            "exit_code": 0,
+            "stdout": "Listing '.'...\nCompiling '.\\\\buggy.py'...\n",
+            "stderr": ""
+          },
+          "errors": []
+        },
+        {
+          "action_id": "6f24858a-eeaf-4cd6-91c9-1a926283992d",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0005838999932166189,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmpcmllnvdc\\buggy.py",
+            "content": "VALUE = 'fixed'\n"
+          },
+          "errors": []
+        }
+      ],
+      "observations": [],
+      "errors": [
+        "command exited with 1"
+      ],
+      "repair_steps": [
+        "Replace incomplete assignment with a valid string literal."
+      ],
+      "final_result": "verified",
+      "duration": 0.3808061000017915,
+      "verified": true
+    },
+    {
+      "goal": "Feature change: modify existing module, run checks, save trace",
+      "actions": [
+        {
+          "action_id": "62df0568-7a19-4fcd-a5fd-668320e1d44c",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0007404999923892319,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp1ydakr0v\\feature.py",
+            "bytes": 32
+          },
+          "errors": []
+        },
+        {
+          "action_id": "d2f4dfb8-f83c-4dc5-872e-e733d3a35f61",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0006896999984746799,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp1ydakr0v\\feature.py",
+            "replacements": 1
+          },
+          "errors": []
+        },
+        {
+          "action_id": "69a1c84d-265a-46a2-9a28-bc484ce4e5fc",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.21136780000233557,
+          "outputs": {
+            "command": "python -m compileall .",
+            "cwd": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp1ydakr0v",
+            "exit_code": 0,
+            "stdout": "Listing '.'...\nCompiling '.\\\\feature.py'...\n",
+            "stderr": ""
+          },
+          "errors": []
+        },
+        {
+          "action_id": "c3fa2641-c1f0-4c58-89fc-08f5b0de513d",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0006033999961800873,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmp1ydakr0v\\feature.py",
+            "content": "def message():\n    return 'Hello Runtime'\n"
+          },
+          "errors": []
+        }
+      ],
+      "observations": [],
+      "errors": [],
+      "repair_steps": [],
+      "final_result": "verified",
+      "duration": 0.21377980000397656,
+      "verified": true
+    },
+    {
+      "goal": "Runtime improvement: find validation failure, propose change, apply, verify",
+      "actions": [
+        {
+          "action_id": "a8df754e-b5dd-445e-9826-44b3a78ff0b8",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0008019000088097528,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmph58i3itm\\validation_notes.md",
+            "bytes": 44
+          },
+          "errors": []
+        },
+        {
+          "action_id": "ca05e21a-1a42-434b-a617-72c46d02fa9a",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0004794999986188486,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmph58i3itm\\validation_notes.md",
+            "content": "- Calculator: PID-window correlation failed\n"
+          },
+          "errors": []
+        },
+        {
+          "action_id": "44d02f3b-e559-4823-afae-c51494fbebde",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0006972999981371686,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmph58i3itm\\validation_notes.md",
+            "replacements": 1
+          },
+          "errors": []
+        },
+        {
+          "action_id": "053ee3a6-3d49-4bc6-9762-e96c6faf11b1",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.0004315999976824969,
+          "outputs": {
+            "path": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmph58i3itm\\validation_notes.md",
+            "content": "- Calculator: PID-window correlation failed\n- Proposed: ApplicationRuntimeIdentity correlation evidence\n"
+          },
+          "errors": []
+        },
+        {
+          "action_id": "06709c29-31fe-4e26-a5c0-442ad5ac4c13",
+          "status": "succeeded",
+          "backend": "development",
+          "score": 0.9,
+          "reason": "executed file/terminal action through development backend",
+          "duration": 0.17010590000427328,
+          "outputs": {
+            "command": "python -c \"from pathlib import Path; assert 'ApplicationRuntimeIdentity' in Path('validation_notes.md').read_text()\"",
+            "cwd": "C:\\Users\\sadmin\\AppData\\Local\\Temp\\tmph58i3itm",
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          },
+          "errors": []
+        }
+      ],
+      "observations": [],
+      "errors": [],
+      "repair_steps": [
+        "Add proposed ApplicationRuntimeIdentity improvement to validation notes."
+      ],
+      "final_result": "verified",
+      "duration": 0.17298589998972602,
+      "verified": true
+    }
+  ]
+}
