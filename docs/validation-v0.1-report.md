@@ -9,17 +9,17 @@
 ### Notepad: open application, write text, read text back, verify
 
 - Status: passed
-- Duration: 2.89s
+- Duration: 8.69s
 - ActionGraph: OpenApplicationAction, TypeTextAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 2.00s
+  - duration: 2.68s
   - errors: ()
 - `succeeded` via `uia-action` score `0.95`
   - reason: executed through Microsoft UI Automation patterns
-  - duration: 0.41s
+  - duration: 3.11s
   - errors: ()
 
 Observations:
@@ -28,14 +28,14 @@ Observations:
 ### Calculator: open application, calculate 1 + 2, observe result
 
 - Status: failed
-- Duration: 14.82s
+- Duration: 17.56s
 - ActionGraph: OpenApplicationAction, ClickAction, ClickAction, ClickAction, ClickAction
 
 Actions:
 - `failed` via `win32` score `0.85`
   - reason: supports process lifecycle through Win32 APIs
-  - duration: 14.82s
-  - errors: ('No application window detected for process 30572',)
+  - duration: 17.56s
+  - errors: ('No application window detected for process 17328',)
 
 Errors:
 - Calculator launch did not produce an observed application window.
@@ -62,7 +62,7 @@ Notes:
 ### Self-development: open project, read file, modify file, run validation command, verify
 
 - Status: passed
-- Duration: 0.19s
+- Duration: 0.22s
 - ActionGraph: WriteFileAction, ReadFileAction, EditFileAction, SearchFilesAction, RunCommandAction, ReadFileAction
 
 Actions:
@@ -84,7 +84,7 @@ Actions:
   - errors: ()
 - `succeeded` via `development` score `0.9`
   - reason: executed file/terminal action through development backend
-  - duration: 0.19s
+  - duration: 0.21s
   - errors: ()
 - `succeeded` via `development` score `0.9`
   - reason: executed file/terminal action through development backend
@@ -98,13 +98,13 @@ Observations:
 ### Paint: open application, observe main window, inspect UI availability
 
 - Status: passed
-- Duration: 2.52s
+- Duration: 5.01s
 - ActionGraph: OpenApplicationAction
 
 Actions:
 - `succeeded` via `win32` score `0.85`
   - reason: process created and application window detected
-  - duration: 1.86s
+  - duration: 2.02s
   - errors: ()
 
 Observations:
@@ -114,22 +114,17 @@ Observations:
 ### Terminal: open cmd, execute simple command, observe output
 
 - Status: failed
-- Duration: 24.59s
+- Duration: 18.39s
 - ActionGraph: OpenApplicationAction
 
 Actions:
-- `succeeded` via `win32` score `0.85`
-  - reason: process created and application window detected
-  - duration: 13.70s
-  - errors: ()
+- `failed` via `win32` score `0.85`
+  - reason: supports process lifecycle through Win32 APIs
+  - duration: 18.39s
+  - errors: ('No application window detected for process 13428',)
 
-Observations:
-- Window count: 0
-- Observed text: None
-
-Notes:
-- The command is passed at launch time; interactive keyboard input is not evaluated in v0.1.
-- Validation output showed command quoting can be mangled before cmd receives the intended input.
+Errors:
+- cmd launch did not produce an observed window.
 
 ### VS Code: open if installed, find window, collect UI observation limitations
 

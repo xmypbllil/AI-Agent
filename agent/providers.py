@@ -69,10 +69,15 @@ class OpenAICompatibleAdapter(LLMAdapter):
         self.last_plan = plan
         return action_graph_from_plan(plan)
 
-    def decide_next_action(self, observations: Mapping[str, Any]) -> ActionGraph | None:
+    def decide_next_action(
+        self,
+        goal: str,
+        observations: Mapping[str, Any],
+        previous_actions: tuple[Any, ...],
+        reason: str,
+    ) -> ActionGraph | None:
         if not observations.get("errors"):
             return None
-        goal = str(observations.get("goal", ""))
         return self.generate_plan(goal, observations)
 
     def _prompt(self, goal: str, context: Mapping[str, Any]) -> Mapping[str, Any]:

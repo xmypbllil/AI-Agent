@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping
+from _ctypes import COMError
 
 from runtime.backends.models import BackendCapabilities, BackendCandidate, BackendRole
 from runtime.ui import (
@@ -79,6 +81,8 @@ UIA_TO_CONTROL = {value: key for key, value in CONTROL_TO_UIA.items()}
 @dataclass(slots=True)
 class UIAObservationBackend:
     _automation: Any | None = field(default=None, init=False, repr=False)
+    max_com_attempts: int = 3
+    retry_delay_seconds: float = 0.1
 
     @property
     def name(self) -> str:
@@ -117,14 +121,18 @@ class UIAObservationBackend:
     def find_all(self, locator: Locator) -> tuple[UIElementObservation, ...]:
         root = self._root_for(locator)
         condition = self._condition(locator)
-        elements = root.FindAll(TreeScope_Subtree, condition)
+        elements = self._com_retry(lambda: root.FindAll(TreeScope_Subtree, condition))
+        if elements is None:
+            return ()
         observations = [self._observation(elements.GetElement(index)) for index in range(elements.Length)]
         return tuple(item for item in observations if self._matches_post_filter(item, locator))
 
     def _element_for(self, locator: Locator):
         root = self._root_for(locator)
         condition = self._condition(locator)
-        elements = root.FindAll(TreeScope_Subtree, condition)
+        elements = self._com_retry(lambda: root.FindAll(TreeScope_Subtree, condition))
+        if elements is None:
+            raise LookupError(f"UI element not found: {locator}")
         matches = [
             elements.GetElement(index)
             for index in range(elements.Length)
@@ -142,7 +150,14 @@ class UIAObservationBackend:
         root_element = self._root_for(locator or Locator())
         root = self._observation(root_element)
         elements: dict[str, UIElementObservation] = {root.identity.stable_id: root}
-        children = root_element.FindAll(TreeScope_Descendants, self._automation_client().CreateTrueCondition())
+        children = self._com_retry(
+            lambda: root_element.FindAll(
+                TreeScope_Descendants,
+                self._automation_client().CreateTrueCondition(),
+            )
+        )
+        if children is None:
+            return UITreeSnapshot(root_id=root.identity.stable_id, elements=elements)
         child_ids: list[str] = []
         for index in range(children.Length):
             child = self._observation(children.GetElement(index), parent_id=root.identity.stable_id)
@@ -160,6 +175,16 @@ class UIAObservationBackend:
         )
         elements[root.identity.stable_id] = root
         return UITreeSnapshot(root_id=root.identity.stable_id, elements=elements)
+
+    def _com_retry(self, operation):
+        for attempt in range(self.max_com_attempts):
+            try:
+                return operation()
+            except COMError:
+                if attempt + 1 >= self.max_com_attempts:
+                    return None
+                time.sleep(self.retry_delay_seconds)
+        return None
 
     def _automation_client(self):
         if self._automation is None:

@@ -29,6 +29,10 @@ class AgentSession:
     observations: list[Mapping[str, Any]] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     final_result: str | None = None
+    completed_goals: list[str] = field(default_factory=list)
+    pending_goals: list[str] = field(default_factory=list)
+    reasoning: list[str] = field(default_factory=list)
+    goal_state: Mapping[str, Any] = field(default_factory=dict)
 
     @property
     def succeeded(self) -> bool:
